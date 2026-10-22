@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FINANZAS Y OPERACIONES BANCARIAS</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chart.js DataLabels Plugin para mostrar porcentajes dentro del pie -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f4f7f6; }
+        .tab-active {
+            border-bottom: 3px solid #0D3B36;
+            color: #0D3B36;
+            font-weight: 700;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 6px;
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Navbar Header Responsivo -->
+    <header class="bg-[#0D3B36] text-white sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-0">
+            <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center min-h-[4rem] gap-3 sm:gap-0">
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 sm:p-2.5 bg-[#1B6B63] rounded-xl text-white shadow-sm shrink-0">
+                        <i class="fa-solid fa-scale-balanced text-lg sm:text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-base sm:text-lg font-bold text-white leading-tight">Sistema Financiero Bancario</h1>
+                        <p class="text-[10px] sm:text-xs text-[#F2C94C]">Balance General - Pasivos y Patrimonio (En Millones de Bs.)</p>
+                    </div>
+                </div>
+
+                <!-- Selector de Entidad Bancaria -->
+                <div class="flex items-center justify-between sm:justify-start space-x-2 bg-[#082623] p-1.5 rounded-xl border border-[#1B6B63] w-full sm:w-auto">
+                    <label for="bankSelect" class="text-xs font-semibold text-[#F2C94C] px-2 whitespace-nowrap">
+                        <i class="fa-solid fa-building-columns mr-1 text-[#A8E0A2]"></i> Entidad:
+                    </label>
+                    <select id="bankSelect" onchange="changeEntity(this.value)" class="bg-white font-semibold text-xs sm:text-sm text-slate-800 py-1.5 px-2 sm:px-3 rounded-lg border border-slate-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0D3B36] cursor-pointer w-full sm:w-auto truncate">
+                        <option value="TOTAL_SISTEMA">🟩 TOTAL SISTEMA BANCARIO</option>
+                        <option value="BNB">🏛️ BANCO NACIONAL DE BOLIVIA (BNB)</option>
+                        <option value="BUN">🏢 BANCO UNIÓN SA (BUN)</option>
+                        <option value="BME">🏢 BANCO MERCANTIL SANTA CRUZ (BME)</option>
+                        <option value="BIS">💼 BANCO BISA SA (BIS)</option>
+                        <option value="BCR">💳 BANCO DE CREDITO DE BOLIVIA (BCR)</option>
+                        <option value="BGA">🌱 BANCO GANADERO SA (BGA)</option>
+                        <option value="BEC">📈 BANCO ECONOMICO SA (BEC)</option>
+                        <option value="BSO">🤝 BANCO SOLIDARIO SA (BSO)</option>
+                        <option value="BNA">🏦 BANCO DE LA NACION ARGENTINA (BNA)</option>
+                        <option value="BIE">⚡ BANCO FIE SA (BIE)</option>
+                        <option value="BFO">🏰 BANCO FORTALEZA SA (BFO)</option>
+                        <option value="BPR">🌿 BANCO PRODEM SA (BPR)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs Bar Responsivo -->
+    <div class="bg-white border-b border-slate-200 shadow-xs overflow-x-auto custom-scrollbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <nav class="flex space-x-4 sm:space-x-8 whitespace-nowrap" aria-label="Tabs">
+                <button id="tab-dashboard" onclick="switchTab('dashboard')" class="tab-active py-3 px-1 text-xs sm:text-sm font-medium transition-colors flex items-center gap-2">
+                    <i class="fa-solid fa-chart-pie"></i> Dashboard de Análisis
+                </button>
+                <button id="tab-portfolio" onclick="switchTab('portfolio')" class="text-slate-500 hover:text-slate-700 py-3 px-1 text-xs sm:text-sm font-medium transition-colors flex items-center gap-2">
+                    <i class="fa-solid fa-chart-pie"></i> Análisis de Carteras
+                </button>
+                <button id="tab-database" onclick="switchTab('database')" class="text-slate-500 hover:text-slate-700 py-3 px-1 text-xs sm:text-sm font-medium transition-colors flex items-center gap-2">
+                    <i class="fa-solid fa-table-cells"></i> Base de Datos
+                </button>
+            </nav>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-6 flex-1 w-full">
+
+        <!-- VIEW 1: DASHBOARD DE ANALISIS -->
+        <div id="dashboardView" class="space-y-6">
+            
+            <!-- Banner de Entidad Seleccionada -->
+            <div class="bg-white border border-[#2A9D8F]/30 rounded-2xl p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-2 shadow-sm">
+                <div>
+                    <span class="text-[10px] sm:text-xs font-bold text-[#2A9D8F] uppercase tracking-wider">Estado Financiero Consolidado</span>
+                    <h2 id="currentEntityTitle" class="text-lg sm:text-xl font-extrabold text-[#0D3B36] break-words">BANCO DE LA NACION DE ARGENTINA SA</h2>
+                </div>
+                <div class="text-left md:text-right flex items-center gap-3 w-full md:w-auto mt-2 md:mt-0">
+                    <span class="text-xs bg-[#F2C94C]/20 text-[#0D3B36] font-bold px-3 py-1.5 rounded-xl border border-[#F2C94C] w-full text-center md:w-auto">
+                        Al 31 de Diciembre de 2025
+                    </span>
+                </div>
+            </div>
+
+            <!-- KPIs Estratégicos -->
+            <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4" id="kpiContainer">
+                <!-- Generado por JS -->
+            </section>
+
+            <!-- Sección de Gráficos Principales -->
+            <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Gráfico 1: Barras Ampliadas para Cuentas Clave -->
+                <div class="lg:col-span-2 bg-[#0D3B36] text-white p-4 sm:p-5 rounded-2xl border border-[#1B6B63] shadow-md flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-2 border-b border-[#1B6B63]/50 pb-3 gap-2">
+                        <div>
+                            <h3 class="font-bold text-white text-sm sm:text-base uppercase tracking-wide">Composición de Rubros</h3>
+                            <p class="text-[10px] sm:text-xs text-[#F2C94C]">Cuentas DCC, DCA, DPF, OP y PAT</p>
+                        </div>
+                        <span class="text-[10px] sm:text-xs bg-[#1B6B63] text-white px-2 py-1 rounded-full font-semibold shrink-0">Barras</span>
+                    </div>
+                    <div class="relative h-[280px] sm:h-[320px] w-full">
+                        <canvas id="chart1"></canvas>
+                    </div>
+                </div>
+
+                <!-- Gráfico 2: Estructura Porcentual (Pie / Dona) -->
+                <div class="bg-[#0D3B36] text-white p-4 sm:p-5 rounded-2xl border border-[#1B6B63] shadow-md flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-2 border-b border-[#1B6B63]/50 pb-3 gap-2">
+                        <div>
+                            <h3 class="font-bold text-white text-sm sm:text-base uppercase tracking-wide">Distribución Relativa (%)</h3>
+                            <p class="text-[10px] sm:text-xs text-[#F2C94C]">Participación sobre Pasivo + Patrimonio</p>
+                        </div>
+                        <span class="text-[10px] sm:text-xs bg-[#1B6B63] text-white px-2 py-1 rounded-full font-semibold shrink-0">Circular</span>
+                    </div>
+                    <div class="relative h-[280px] sm:h-[320px] w-full">
+                        <canvas id="chart2"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Gráfico 3 Adicional Ampliado (Dona) -->
+            <section class="bg-[#0D3B36] text-white p-4 sm:p-5 rounded-2xl border border-[#1B6B63] shadow-md">
+                <div class="flex items-center justify-between mb-2 border-b border-[#1B6B63]/50 pb-3 gap-2">
+                    <div>
+                        <h3 class="font-bold text-white text-sm sm:text-base uppercase tracking-wide">Estructura Proporcional del Balance General</h3>
+                        <p class="text-[10px] sm:text-xs text-[#F2C94C]">Visión Consolidada del Pasivo Exigible vs Capital Propio</p>
+                    </div>
+                    <span class="text-[10px] sm:text-xs bg-[#1B6B63] text-white px-2 py-1 rounded-full font-semibold shrink-0">Anillo Dona</span>
+                </div>
+                <div class="relative h-[260px] sm:h-[300px] w-full">
+                    <canvas id="chart3"></canvas>
+                </div>
+            </section>
+
+            <!-- Estado de Situación Financiera Completo -->
+            <section class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="p-4 sm:p-5 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 bg-slate-50">
+                    <div>
+                        <h3 class="font-bold text-[#0D3B36] text-sm sm:text-base">Estado de Situación Financiera Completo</h3>
+                        <p class="text-xs text-slate-500">Estructura detallada de Activo, Pasivo y Patrimonio (<span id="fullStatementBankBadge" class="font-bold text-[#0D3B36]">TOTAL SISTEMA</span>)</p>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left text-xs sm:text-sm text-slate-700 min-w-[600px]">
+                        <thead class="bg-[#0D3B36] text-white text-[10px] sm:text-xs uppercase font-semibold">
+                            <tr>
+                                <th class="px-3 sm:px-6 py-3.5 w-24 sm:w-28">Código</th>
+                                <th class="px-3 sm:px-6 py-3.5">Cuenta / Concepto</th>
+                                <th class="px-3 sm:px-6 py-3.5 text-right w-36 sm:w-48">Monto (Millones Bs.)</th>
+                                <th class="px-3 sm:px-6 py-3.5 text-right w-24 sm:w-32">% Participación</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100" id="fullStatementTableBody">
+                            <!-- Generado dinámicamente por JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Tabla de Resumen por Módulo -->
+            <section class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="p-4 sm:p-5 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 bg-slate-50">
+                    <div>
+                        <h3 class="font-bold text-[#0D3B36] text-sm sm:text-base">Resumen Sintético de Cuentas de Pasivo y Patrimonio</h3>
+                        <p class="text-xs text-slate-500">Clasificación resumida con fórmulas y agregados clave</p>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left text-xs sm:text-sm text-slate-700 min-w-[650px]">
+                        <thead class="bg-[#0D3B36] text-white text-[10px] sm:text-xs uppercase font-semibold">
+                            <tr>
+                                <th class="px-3 sm:px-6 py-3.5 w-24 sm:w-28">Código</th>
+                                <th class="px-3 sm:px-6 py-3.5">Cuenta / Rubro</th>
+                                <th class="px-3 sm:px-6 py-3.5 text-right w-36 sm:w-48">Monto (Millones Bs.)</th>
+                                <th class="px-3 sm:px-6 py-3.5 text-right w-24 sm:w-32">% Participación</th>
+                                <th class="px-3 sm:px-6 py-3.5 text-center w-48 sm:w-64">Fórmula / Criterio</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100" id="summaryTableBody">
+                            <!-- Generado dinámicamente por JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <!-- VIEW 3: ANALISIS DE CARTERAS -->
+        <div id="portfolioView" class="hidden space-y-6">
+            <!-- Header de Sección Cartera -->
+            <div class="bg-white border border-[#2A9D8F]/30 rounded-2xl p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-2 shadow-sm">
+                <div>
+                    <span class="text-[10px] sm:text-xs font-bold text-[#2A9D8F] uppercase tracking-wider">Módulo de Activos - Cuenta 130.00</span>
+                    <h2 id="portfolioEntityTitle" class="text-lg sm:text-xl font-extrabold text-[#0D3B36] break-words">TOTAL SISTEMA BANCARIO - ANÁLISIS DE CARTERA</h2>
+                </div>
+                <div class="text-left md:text-right flex items-center gap-3 w-full md:w-auto mt-2 md:mt-0">
+                    <span class="text-xs bg-[#F2C94C]/20 text-[#0D3B36] font-bold px-3 py-1.5 rounded-xl border border-[#F2C94C] w-full text-center md:w-auto">
+                        Al 31 de Diciembre de 2025
+                    </span>
+                </div>
+            </div>
+
+            <!-- KPIs Estratégicos de Cartera -->
+            <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4" id="portfolioKpis">
+                <!-- Generado por JS -->
+            </section>
+
+            <!-- Sección de Gráficos de Cartera -->
+            <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Gráfico Principal: Dona con Tarjeta Total al Costado -->
+                <div class="lg:col-span-2 bg-[#0D3B36] text-white p-4 sm:p-5 rounded-2xl border border-[#1B6B63] shadow-md flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-4 border-b border-[#1B6B63]/50 pb-3 gap-2">
+                        <div>
+                            <h3 class="font-bold text-white text-sm sm:text-base uppercase tracking-wide">Estructura Detallada de Cartera (Cuenta 130.00)</h3>
+                            <p class="text-[10px] sm:text-xs text-[#F2C94C]">Distribución Porcentual (%) de Subcuentas</p>
+                        </div>
+                        <span class="text-[10px] sm:text-xs bg-[#1B6B63] text-white px-2 py-1 rounded-full font-semibold shrink-0">Anillo Dona</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center min-h-[360px]">
+                        <!-- Canvas para la Dona -->
+                        <div class="md:col-span-2 relative h-[280px] md:h-full flex items-center justify-center w-full">
+                            <canvas id="portfolioDoughnutChart"></canvas>
+                        </div>
+
+                        <!-- Tarjeta Lateral para el Total de Cartera -->
+                        <div class="bg-[#082623] border border-[#1B6B63] rounded-2xl p-4 flex flex-col justify-center space-y-3 text-center md:text-left shadow-inner">
+                            <div class="flex items-center gap-2 justify-center md:justify-start">
+                                <i class="fa-solid fa-coins text-[#F2C94C]"></i>
+                                <span class="text-xs font-bold uppercase text-[#A8E0A2] tracking-wider">Cartera Bruta Total</span>
+                            </div>
+                            <div>
+                                <div id="portfolioTotalCardValue" class="text-xl sm:text-2xl font-black text-white leading-tight">Bs. 0,00</div>
+                                <span class="text-[11px] text-[#F2B880]">Millones de Bs. (100%)</span>
+                            </div>
+                            <div class="border-t border-[#1B6B63]/60 pt-3 text-[11px] text-slate-300 space-y-1">
+                                <div class="flex justify-between">
+                                    <span>Vigente Directa:</span>
+                                    <span id="cardVigentePct" class="font-bold text-[#A8E0A2]">0%</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Reprogramados:</span>
+                                    <span id="cardReprogPct" class="font-bold text-[#F2C94C]">0%</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Índice Mora:</span>
+                                    <span id="cardMoraPct" class="font-bold text-[#EB5757]">0%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráfico de Barras Horizontales de Calidad de Cartera -->
+                <div class="bg-[#0D3B36] text-white p-4 sm:p-5 rounded-2xl border border-[#1B6B63] shadow-md flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-4 border-b border-[#1B6B63]/50 pb-3 gap-2">
+                        <div>
+                            <h3 class="font-bold text-white text-sm sm:text-base uppercase tracking-wide">Composición por Riesgo</h3>
+                            <p class="text-[10px] sm:text-xs text-[#F2C94C]">Análisis Comparativo Limpio</p>
+                        </div>
+                        <span class="text-[10px] sm:text-xs bg-[#1B6B63] text-white px-2 py-1 rounded-full font-semibold shrink-0">Barras Horiz.</span>
+                    </div>
+                    
+                    <div class="relative h-[300px] sm:h-[360px] w-full">
+                        <canvas id="portfolioBarChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tabla Resumen de Cartera -->
+            <section class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="p-4 sm:p-5 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 bg-slate-50">
+                    <div>
+                        <h3 class="font-bold text-[#0D3B36] text-sm sm:text-base">Desglose de Cuentas de Cartera de Créditos</h3>
+                        <p class="text-xs text-slate-500">Subcuentas 131.00 a 139.00 (Montos en Millones de Bs. y Porcentaje %)</p>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left text-xs sm:text-sm text-slate-700 min-w-[600px]">
+                        <thead class="bg-[#0D3B36] text-white text-[10px] sm:text-xs uppercase font-semibold">
+                            <tr>
+                                <th class="px-3 sm:px-6 py-3.5 w-24 sm:w-28">Código</th>
+                                <th class="px-3 sm:px-6 py-3.5">Cuenta / Rubro de Cartera</th>
+                                <th class="px-3 sm:px-6 py-3.5 text-right w-36 sm:w-48">Monto (Millones Bs.)</th>
+                                <th class="px-3 sm:px-6 py-3.5 text-right w-24 sm:w-32">% Participación</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100" id="portfolioTableBody">
+                            <!-- Generado por JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <!-- VIEW 2: BASE DE DATOS COMPLETA EXCEL -->
+        <div id="databaseView" class="hidden space-y-6">
+            <div class="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 class="text-lg sm:text-xl font-bold text-[#0D3B36]">Matriz Consolidada de Pasivos y Patrimonio (Base de Datos Excel)</h2>
+                    <p class="text-xs text-slate-500">Visualización interactiva con todos los bancos del sistema financiero nacional.</p>
+                </div>
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
+                    <input type="text" id="dbSearch" onkeyup="filterDatabaseTable()" placeholder="🔍 Buscar cuenta o código..." class="bg-slate-50 border border-slate-300 text-xs rounded-xl px-3.5 py-2 w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-[#0D3B36]">
+                </div>
+            </div>
+
+            <!-- Tabla de Base de Datos Interactiva Completa -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left text-xs text-slate-600 whitespace-nowrap" id="fullDatabaseTable">
+                        <thead class="bg-[#0D3B36] text-white text-xs uppercase font-semibold">
+                            <tr>
+                                <th class="px-3 py-3.5 sticky left-0 bg-[#0D3B36] z-10 shadow-r">Código</th>
+                                <th class="px-4 py-3.5 sticky left-16 sm:left-20 bg-[#0D3B36] z-10 min-w-[200px] sm:min-w-[220px]">Cuentas Pasivo / Patrimonio</th>
+                                <th class="px-4 py-3.5 text-right bg-[#082623] font-bold border-l border-[#1B6B63]">TOTAL SISTEMA</th>
+                                <th class="px-4 py-3.5 text-right">BNB</th>
+                                <th class="px-4 py-3.5 text-right">BUN</th>
+                                <th class="px-4 py-3.5 text-right">BME</th>
+                                <th class="px-4 py-3.5 text-right">BIS</th>
+                                <th class="px-4 py-3.5 text-right">BCR</th>
+                                <th class="px-4 py-3.5 text-right">BGA</th>
+                                <th class="px-4 py-3.5 text-right">BEC</th>
+                                <th class="px-4 py-3.5 text-right">BSO</th>
+                                <th class="px-4 py-3.5 text-right">BNA</th>
+                                <th class="px-4 py-3.5 text-right">BIE</th>
+                                <th class="px-4 py-3.5 text-right">BFO</th>
+                                <th class="px-4 py-3.5 text-right">BPR</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100" id="fullDbBody">
+                            <!-- Generado dinámicamente por JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER INSTITUCIONAL / INTEGRANTES DEL GRUPO -->
+    <footer class="bg-[#0D3B36] text-white border-t-4 border-[#F2C94C] mt-8 sm:mt-12 py-6 sm:py-8 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto space-y-6">
+            <!-- Header del Footer -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-[#1B6B63] pb-4 gap-4">
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 sm:p-2.5 bg-[#1B6B63] rounded-xl text-[#F2C94C] shrink-0">
+                        <i class="fa-solid fa-graduation-cap text-xl sm:text-2xl"></i>
+                    </div>
+                    <div>
+                        <span class="text-[10px] sm:text-xs text-[#A8E0A2] font-semibold tracking-wider uppercase">Materia</span>
+                        <h2 class="text-base sm:text-lg font-extrabold text-white tracking-wide">FINANZAS Y OPERACIONES BANCARIAS</h2>
+                        <span class="text-[10px] sm:text-xs text-[#A8E0A2] font-semibold tracking-wider uppercase">DOCENTE: M. Sc. HERNAN ALVARADO RALDE</span>
+                    </div>
+                </div>
+                <div class="bg-[#082623] px-3 sm:px-4 py-2 rounded-xl border border-[#1B6B63] text-left md:text-right w-full md:w-auto">
+                    <span class="text-xs text-[#F2C94C] font-bold block">SISTEMA DE ANÁLISIS FINANCIERO BANCARIO</span>
+                    <span class="text-[10px] sm:text-[11px] text-slate-300">UNIVERSIDAD MAYOR DE SAN ANDRES - ADMINISTRACIÓN DE EMPRESAS</span>
+                </div>
+            </div>
+
+            <!-- Lista de Integrantes Responsiva -->
+            <div>
+                <div class="flex items-center gap-2 mb-4">
+                    <i class="fa-solid fa-users text-[#F2C94C] text-sm"></i>
+                    <h3 class="text-xs sm:text-sm font-bold text-[#A8E0A2] uppercase tracking-wider">Integrantes del Grupo:</h3>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3">
+                    <div class="bg-[#082623] hover:bg-[#1B6B63]/40 p-2.5 rounded-xl border border-[#1B6B63]/60 transition flex items-center gap-2">
+                        <span class="w-5 h-5 sm:w-6 sm:h-6 bg-[#1B6B63] text-[#F2C94C] text-[10px] sm:text-xs font-bold rounded-full flex items-center justify-center shrink-0">1</span>
+                        <span class="text-xs text-slate-200 font-medium leading-tight">Almonte Cordero Ana Gabriela</span>
+                    </div>
+                    <div class="bg-[#082623] hover:bg-[#1B6B63]/40 p-2.5 rounded-xl border border-[#1B6B63]/60 transition flex items-center gap-2">
+                        <span class="w-5 h-5 sm:w-6 sm:h-6 bg-[#1B6B63] text-[#F2C94C] text-[10px] sm:text-xs font-bold rounded-full flex items-center justify-center shrink-0">2</span>
+                        <span class="text-xs text-slate-200 font-medium leading-tight">Arce García Andrea Rosa</span>
+                    </div>
+                    <div class="bg-[#082623] hover:bg-[#1B6B63]/40 p-2.5 rounded-xl border border-[#1B6B63]/60 transition flex items-center gap-2">
+                        <span class="w-5 h-5 sm:w-6 sm:h-6 bg-[#1B6B63] text-[#F2C94C] text-[10px] sm:text-xs font-bold rounded-full flex items-center justify-center shrink-0">3</span>
+                        <span class="text-xs text-slate-200 font-medium leading-tight">Blanco Limachi Noel Fernando</span>
+                    </div>
+                    <div class="bg-[#082623] hover:bg-[#1B6B63]/40 p-2.5 rounded-xl border border-[#1B6B63]/60 transition flex items-center gap-2">
+                        <span class="w-5 h-5 sm:w-6 sm:h-6 bg-[#1B6B63] text-[#F2C94C] text-[10px] sm:text-xs font-bold rounded-full flex items-center justify-center shrink-0">4</span>
+                        <span class="text-xs text-slate-200 font-medium leading-tight">Capcha Pari Julio César</span>
+                    </div>
+                    <div class="bg-[#082623] hover:bg-[#1B6B63]/40 p-2.5 rounded-xl border border-[#1B6B63]/60 transition flex items-center gap-2">
+                        <span class="w-5 h-5 sm:w-6 sm:h-6 bg-[#1B6B63] text-[#F2C94C] text-[10px] sm:text-xs font-bold rounded-full flex items-center justify-center shrink-0">5</span>
+                        <span class="text-xs text-slate-200 font-medium leading-tight">Castro Mendoza Stephanie Olivia</span>
+                    </div>
+                    <div class="bg-[#082623] hover:bg-[#1B6B63]/40 p-2.5 rounded-xl border border-[#1B6B63]/60 transition flex items-center gap-2">
+                        <span class="w-5 h-5 sm:w-6 sm:h-6 bg-[#1B6B63] text-[#F2C94C] text-[10px] sm:text-xs font-bold rounded-full flex items-center justify-center shrink-0">6</span>
+                        <span class="text-xs text-slate-200 font-medium leading-tight">Choque Mayta Teddy Hugo</span>
+                    </div>
+                    <div class="bg-[#082623] hover:bg-[#1B6B63]/40 p-2.5 rounded-xl border border-[#1B6B63]/60 transition flex items-center gap-2">
+                        <span class="w-5 h-5 sm:w-6 sm:h-6 bg-[#1B6B63] text-[#F2C94C] text-[10px] sm:text-xs font-bold rounded-full flex items-center justify-center shrink-0">7</span>
+                        <span class="text-xs text-slate-200 font-medium leading-tight">Millares Canaza Araceli Isabel</span>
+                    </div>
+                    <div class="bg-[#082623] hover:bg-[#1B6B63]/40 p-2.5 rounded-xl border border-[#1B6B63]/60 transition flex items-center gap-2">
+                        <span class="w-5 h-5 sm:w-6 sm:h-6 bg-[#1B6B63] text-[#F2C94C] text-[10px] sm:text-xs font-bold rounded-full flex items-center justify-center shrink-0">8</span>
+                        <span class="text-xs text-slate-200 font-medium leading-tight">Toledo Quispe Daysi Briseyda</span>
+                    </div>
+                    <div class="bg-[#082623] hover:bg-[#1B6B63]/40 p-2.5 rounded-xl border border-[#1B6B63]/60 transition flex items-center gap-2">
+                        <span class="w-5 h-5 sm:w-6 sm:h-6 bg-[#1B6B63] text-[#F2C94C] text-[10px] sm:text-xs font-bold rounded-full flex items-center justify-center shrink-0">9</span>
+                        <span class="text-xs text-slate-200 font-medium leading-tight">Urquiola Tarquino Marvin Eduardo</span>
+                    </div>
+                    <div class="bg-[#082623] hover:bg-[#1B6B63]/40 p-2.5 rounded-xl border border-[#1B6B63]/60 transition flex items-center gap-2">
+                        <span class="w-5 h-5 sm:w-6 sm:h-6 bg-[#1B6B63] text-[#F2C94C] text-[10px] sm:text-xs font-bold rounded-full flex items-center justify-center shrink-0">10</span>
+                        <span class="text-xs text-slate-200 font-medium leading-tight">Vela Mamani Estefanny Andrea</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Bottom Note -->
+            <div class="border-t border-[#1B6B63]/50 pt-4 flex flex-col sm:flex-row justify-between items-center text-[10px] sm:text-[11px] text-slate-400 gap-2 text-center sm:text-left">
+                <p>© Trabajo Práctico de Análisis Financiero</p>
+                <p class="text-[#F2C94C]">Cuentas de Activo, Pasivo, Patrimonio y Carteras de Crédito</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal Notificación -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-[#0D3B36] text-white px-4 py-3 rounded-xl text-xs font-medium shadow-xl hidden transition-all flex items-center gap-2 z-50 max-w-[90vw]">
+        <i class="fa-solid fa-circle-check text-[#F2C94C]"></i>
+        <span id="toastMsg">Acción completada</span>
+    </div>
+
+    <script>
+        let currentEntityKey = 'TOTAL_SISTEMA';
+        let chartInstance1 = null;
+        let chartInstance2 = null;
+        let chartInstance3 = null;
+
+        // Instancias para gráficos de Cartera
+        let portfolioDoughnutInstance = null;
+        let portfolioBarInstance = null;
+
+        // Paleta de colores oficial adaptada a los reportes
+        const PALETTE = {
+            yellow: '#F2C94C',
+            peach: '#F2B880',
+            lightGreen: '#A8E0A2',
+            teal: '#2A9D8F',
+            darkGreen: '#1B6B63',
+            deepGreen: '#0D3B36',
+            blue: '#2F80ED',
+            red: '#EB5757',
+            orange: '#F2994A',
+            purple: '#9B51E0'
+        };
+
+        if (typeof ChartDataLabels !== 'undefined') {
+            Chart.register(ChartDataLabels);
+        }
+
+        // Esquema de Cuentas de Cartera según imágenes adjuntas
+        const portfolioSchema = [
+            { code: "130.00", name: "CARTERA", key: "carteraTotal", isHeader: true },
+            { code: "131.00", name: "CARTERA VIGENTE", key: "carteraVigente", color: "#2F80ED" },
+            { code: "133.00", name: "CARTERA VENCIDA", key: "carteraVencida", color: "#EB5757" },
+            { code: "134.00", name: "CARTERA EN EJECUCIÓN", key: "carteraEjecucion", color: "#F2994A" },
+            { code: "135.00", name: "CARTERA REPROGRAMADA O REESTRUCTURADA VIGENTE", key: "carteraReprogVigente", color: "#F2C94C" },
+            { code: "136.00", name: "CARTERA REPROGRAMADA O REESTRUCTURADA VENCIDA", key: "carteraReprogVencida", color: "#56CCF2" },
+            { code: "137.00", name: "CARTERA REPROGRAMADA O REESTRUCTURADA EN EJECUCIÓN", key: "carteraReprogEjecucion", color: "#6FCF97" },
+            { code: "138.00", name: "PRODUCTOS DEVENGADOS POR COBRAR CARTERA", key: "prodDevengados", color: "#1B6B63" },
+            { code: "139.00", name: "(PREVISIÓN PARA INCOBRABILIDAD DE CARTERA)", key: "previsionIncobrabilidad", color: "#D35400", isNegative: true }
+        ];
+
+        // Esquema para la nueva tabla de Estado de Situación Financiera Completo
+        const fullStatementSchema = [
+            { code: "100.00", name: "ACTIVO", key: "activoTotal", isHeader: true, pctBaseKey: "activoTotal" },
+            { code: "110.00", name: "DISPONIBILIDADES", key: "disponibilidades", isHeader: false, pctBaseKey: "activoTotal" },
+            { code: "120.00", name: "INVERSIONES TEMPORARIAS", key: "inversionesTemporarias", isHeader: false, pctBaseKey: "activoTotal" },
+            { code: "130.00", name: "CARTERA", key: "cartera", isHeader: false, pctBaseKey: "activoTotal" },
+            { code: "140.00", name: "OTRAS CUENTAS POR COBRAR", key: "otrasCuentasCobrar", isHeader: false, pctBaseKey: "activoTotal" },
+            { code: "150.00", name: "BIENES REALIZABLES", key: "bienesRealizables", isHeader: false, pctBaseKey: "activoTotal" },
+            { code: "160.00", name: "INVERSIONES PERMANENTES", key: "inversionesPermanentes", isHeader: false, pctBaseKey: "activoTotal" },
+            { code: "170.00", name: "BIENES DE USO", key: "bienesUso", isHeader: false, pctBaseKey: "activoTotal" },
+            { code: "180.00", name: "OTROS ACTIVOS", key: "otrosActivos", isHeader: false, pctBaseKey: "activoTotal" },
+            { code: "190.00", name: "FIDEICOMISOS CONSTITUIDOS", key: "fideicomisos", isHeader: false, pctBaseKey: "activoTotal" },
+            
+            { code: "200.00", name: "PASIVO", key: "pasivoTotal", isHeader: true, pctBaseKey: "pasivoTotal" },
+            { code: "210.00", name: "OBLIGACIONES CON EL PÚBLICO", key: "obligPublicoFull", isHeader: false, pctBaseKey: "pasivoTotal" },
+            { code: "220.00", name: "OBLIGACIONES CON INSTITUCIONES FISCALES", key: "obligFiscales", isHeader: false, pctBaseKey: "pasivoTotal" },
+            { code: "280.00", name: "OBLIGACIONES CON EMPRESAS PÚBLICAS", key: "obligEmpresasPublicas", isHeader: false, pctBaseKey: "pasivoTotal" },
+            { code: "230.00", name: "OBLIGACIONES CON BANCOS Y ENTIDADES DE FINANCIAMIENTO", key: "obligBancos", isHeader: false, pctBaseKey: "pasivoTotal" },
+            { code: "240.00", name: "OTRAS CUENTAS POR PAGAR", key: "otrasCuentasPagar", isHeader: false, pctBaseKey: "pasivoTotal" },
+            { code: "250.00", name: "PREVISIONES", key: "previsiones", isHeader: false, pctBaseKey: "pasivoTotal" },
+            { code: "260.00", name: "VALORES EN CIRCULACIÓN", key: "valoresCirculacion", isHeader: false, pctBaseKey: "pasivoTotal" },
+            { code: "270.00", name: "OBLIGACIONES SUBORDINADAS", key: "obligSubordinadas", isHeader: false, pctBaseKey: "pasivoTotal" },
+            
+            { code: "300.00", name: "PATRIMONIO", key: "patrimonioTotal", isHeader: true, pctBaseKey: "patrimonioTotal" },
+            { code: "310.00", name: "CAPITAL SOCIAL", key: "capitalSocial", isHeader: false, pctBaseKey: "patrimonioTotal" },
+            { code: "320.00", name: "APORTES NO CAPITALIZADOS", key: "aportesNoCapitalizados", isHeader: false, pctBaseKey: "patrimonioTotal" },
+            { code: "330.00", name: "AJUSTES AL PATRIMONIO", key: "ajustesPatrimonio", isHeader: false, pctBaseKey: "patrimonioTotal" },
+            { code: "340.00", name: "RESERVAS", key: "reservas", isHeader: false, pctBaseKey: "patrimonioTotal" },
+            { code: "350.00", name: "RESULTADOS ACUMULADOS", key: "resultadosAcumulados", isHeader: false, pctBaseKey: "patrimonioTotal" },
+            
+            { code: "", name: "PASIVO + PATRIMONIO", key: "totalPasivoPatrimonio", isHeader: true, pctBaseKey: "totalPasivoPatrimonio" }
+        ];
+
+        // Esquema estricto de cuentas de Pasivo y Patrimonio
+        const rowsSchema = [
+            { code: "210.00", name: "OBLIGACIONES CON EL PÚBLICO", key: "obligPublico", formula: "=211.00+212.00+213.00+213.00b+215.00" },
+            { code: "211.00", name: " - DCC (A LA VISTA)", key: "dcc", formula: "Dato Directo" },
+            { code: "212.00", name: " - DCA (CUENTAS DE AHORROS)", key: "dca", formula: "Dato Directo" },
+            { code: "213.00", name: " - DPF (A PLAZO FIJO)", key: "dpf", formula: "Dato Directo" },
+            { code: "213.00", name: " - OBLIGACIONES CON EL PÚBLICO A PLAZO", key: "obligPlazoOtras", formula: "Dato Directo" },
+            { code: "215.00", name: " - OBLIGACIONES CON EL PÚBLICO A PLAZO FIJO CON ANOTACIÓN EN CUENTA", key: "obligAnotacionCuenta", formula: "Dato Directo" },
+            { code: "", name: "OTROS PASIVOS (OP)", key: "otrosPasivos", formula: "=SUMA(214+218+220+280+230+240+250+260+270)" },
+            { code: "214.00", name: " - OBLIGACIONES CON EL PÚBLICO RESTRINGIDAS", key: "obligRestringidas", formula: "Dato Directo" },
+            { code: "218.00", name: " - CARGOS DEVENGADOS POR PAGAR OBLIGACIONES CON EL PÚBLICO", key: "cargosDevengados", formula: "Dato Directo" },
+            { code: "220.00", name: " - OBLIGACIONES CON INSTITUCIONES FISCALES", key: "obligFiscales", formula: "Dato Directo" },
+            { code: "280.00", name: " - OBLIGACIONES CON EMPRESAS PÚBLICAS", key: "obligEmpresasPublicas", formula: "Dato Directo" },
+            { code: "230.00", name: " - OBLIGACIONES CON BANCOS Y ENTIDADES DE FINANCIAMIENTO", key: "obligBancos", formula: "Dato Directo" },
+            { code: "240.00", name: " - OTRAS CUENTAS POR PAGAR", key: "otrasCuentasPagar", formula: "Dato Directo" },
+            { code: "250.00", name: " - PREVISIONES", key: "previsiones", formula: "Dato Directo" },
+            { code: "260.00", name: " - VALORES EN CIRCULACIÓN", key: "valoresCirculacion", formula: "Dato Directo" },
+            { code: "270.00", name: " - OBLIGACIONES SUBORDINADAS", key: "obligSubordinadas", formula: "Dato Directo" },
+            { code: "300.00", name: "PATRIMONIO (PAT)", key: "patrimonioTotal", formula: "Dato Directo" },
+            { code: "TOTAL", name: "PASIVO + PATRIMONIO", key: "pasivoMasPatrimonio", formula: "=PASIVO + PATRIMONIO" }
+        ];
+
+        // Matriz de Datos completa para todos los bancos
+        const bankDataMatrix = {
+            TOTAL_SISTEMA: {
+                name: "TOTAL SISTEMA BANCARIO",
+                activoTotal: 305182.00, disponibilidades: 41031.00, inversionesTemporarias: 38746.00, cartera: 200180.00, otrasCuentasCobrar: 2275.00, bienesRealizables: 262.00, inversionesPermanentes: 17137.00, bienesUso: 4606.00, otrosActivos: 944.00, fideicomisos: 0.00,
+                carteraTotal: 200179.66, carteraVigente: 172354.53, carteraVencida: 657.87, carteraEjecucion: 1492.41, carteraReprogVigente: 24673.93, carteraReprogVencida: 880.01, carteraReprogEjecucion: 2879.33, prodDevengados: 5347.68, previsionIncobrabilidad: -8106.11,
+                pasivoTotal: 281121.00, obligPublicoFull: 214874.00, obligPublico: 198363.00, dcc: 33812.00, dca: 72519.00, dpf: 92032.00, obligPlazoOtras: 18.00, obligAnotacionCuenta: 92014.00,
+                otrosPasivos: 82758.00, obligRestringidas: 3433.00, cargosDevengados: 13078.00, obligFiscales: 172.00, obligEmpresasPublicas: 20083.00, obligBancos: 31570.00, otrasCuentasPagar: 5534.00, previsiones: 2973.00, valoresCirculacion: 3242.00, obligSubordinadas: 2673.00,
+                patrimonioTotal: 24061.00, capitalSocial: 16353.00, aportesNoCapitalizados: 149.00, ajustesPatrimonio: 0.00, reservas: 3782.00, resultadosAcumulados: 3778.00, totalPasivoPatrimonio: 305182.00
+            },
+            BNB: {
+                name: "BANCO NACIONAL DE BOLIVIA SA (BNB)",
+                activoTotal: 36963.00, disponibilidades: 4812.00, inversionesTemporarias: 4610.00, cartera: 24391.00, otrasCuentasCobrar: 265.00, bienesRealizables: 31.00, inversionesPermanentes: 2105.00, bienesUso: 612.00, otrosActivos: 137.00, fideicomisos: 0.00,
+                carteraTotal: 23089.17, carteraVigente: 19168.64, carteraVencida: 78.00, carteraEjecucion: 218.85, carteraReprogVigente: 3494.87, carteraReprogVencida: 108.53, carteraReprogEjecucion: 400.90, prodDevengados: 580.87, previsionIncobrabilidad: -961.48,
+                pasivoTotal: 34300.00, obligPublicoFull: 26775.00, obligPublico: 24852.00, dcc: 5382.00, dca: 7821.00, dpf: 11649.00, obligPlazoOtras: 0.00, obligAnotacionCuenta: 11649.00,
+                otrosPasivos: 9448.00, obligRestringidas: 424.00, cargosDevengados: 1499.00, obligFiscales: 9.00, obligEmpresasPublicas: 1505.00, obligBancos: 4784.00, otrasCuentasPagar: 572.00, previsiones: 317.00, valoresCirculacion: 252.00, obligSubordinadas: 86.00,
+                patrimonioTotal: 2663.00, capitalSocial: 1810.00, aportesNoCapitalizados: 16.00, ajustesPatrimonio: 0.00, reservas: 418.00, resultadosAcumulados: 419.00, totalPasivoPatrimonio: 36963.00
+            },
+            BUN: {
+                name: "BANCO UNIÓN SA (BUN)",
+                activoTotal: 56553.00, disponibilidades: 8321.00, inversionesTemporarias: 7890.00, cartera: 36810.00, otrasCuentasCobrar: 412.00, bienesRealizables: 45.00, inversionesPermanentes: 2150.00, bienesUso: 742.00, otrosActivos: 183.00, fideicomisos: 0.00,
+                carteraTotal: 33628.69, carteraVigente: 29466.33, carteraVencida: 103.56, carteraEjecucion: 273.05, carteraReprogVigente: 4042.11, carteraReprogVencida: 164.32, carteraReprogEjecucion: 618.06, prodDevengados: 721.08, previsionIncobrabilidad: -1759.82,
+                pasivoTotal: 52674.00, obligPublicoFull: 34659.00, obligPublico: 32919.00, dcc: 6222.00, dca: 17956.00, dpf: 8741.00, obligPlazoOtras: 0.00, obligAnotacionCuenta: 8741.00,
+                otrosPasivos: 19755.00, obligRestringidas: 695.00, cargosDevengados: 1045.00, obligFiscales: 108.00, obligEmpresasPublicas: 9768.00, obligBancos: 5527.00, otrasCuentasPagar: 1310.00, previsiones: 466.00, valoresCirculacion: 395.00, obligSubordinadas: 441.00,
+                patrimonioTotal: 3879.00, capitalSocial: 2637.00, aportesNoCapitalizados: 24.00, ajustesPatrimonio: 0.00, reservas: 608.00, resultadosAcumulados: 610.00, totalPasivoPatrimonio: 56553.00
+            },
+            BME: {
+                name: "BANCO MERCANTIL SANTA CRUZ SA (BME)",
+                activoTotal: 44972.00, disponibilidades: 6112.00, inversionesTemporarias: 5780.00, cartera: 29540.00, otrasCuentasCobrar: 334.00, bienesRealizables: 38.00, inversionesPermanentes: 2310.00, bienesUso: 680.00, otrosActivos: 178.00, fideicomisos: 0.00,
+                carteraTotal: 27985.11, carteraVigente: 22156.62, carteraVencida: 58.45, carteraEjecucion: 405.23, carteraReprogVigente: 4923.75, carteraReprogVencida: 85.32, carteraReprogEjecucion: 518.08, prodDevengados: 957.65, previsionIncobrabilidad: -1119.98,
+                pasivoTotal: 42027.00, obligPublicoFull: 31496.00, obligPublico: 29748.00, dcc: 5761.00, dca: 10246.00, dpf: 13741.00, obligPlazoOtras: 1.00, obligAnotacionCuenta: 13740.00,
+                otrosPasivos: 12279.00, obligRestringidas: 623.00, cargosDevengados: 1125.00, obligFiscales: 12.00, obligEmpresasPublicas: 2939.00, obligBancos: 5846.00, otrasCuentasPagar: 377.00, previsiones: 212.00, valoresCirculacion: 994.00, obligSubordinadas: 151.00,
+                patrimonioTotal: 2945.00, capitalSocial: 2002.00, aportesNoCapitalizados: 18.00, ajustesPatrimonio: 0.00, reservas: 462.00, resultadosAcumulados: 463.00, totalPasivoPatrimonio: 44972.00
+            },
+            BIS: {
+                name: "BANCO BISA SA (BIS)",
+                activoTotal: 31250.00, disponibilidades: 4180.00, inversionesTemporarias: 3950.00, cartera: 20580.00, otrasCuentasCobrar: 233.00, bienesRealizables: 27.00, inversionesPermanentes: 1730.00, bienesUso: 450.00, otrosActivos: 100.00, fideicomisos: 0.00,
+                carteraTotal: 19893.08, carteraVigente: 17860.66, carteraVencida: 28.35, carteraEjecucion: 66.07, carteraReprogVigente: 1915.97, carteraReprogVencida: 62.51, carteraReprogEjecucion: 454.67, prodDevengados: 371.52, previsionIncobrabilidad: -866.66,
+                pasivoTotal: 28220.00, obligPublicoFull: 21809.00, obligPublico: 19049.00, dcc: 5117.00, dca: 4885.00, dpf: 9047.00, obligPlazoOtras: 2.00, obligAnotacionCuenta: 9045.00,
+                otrosPasivos: 9171.00, obligRestringidas: 404.00, cargosDevengados: 2356.00, obligFiscales: 17.00, obligEmpresasPublicas: 1355.00, obligBancos: 3373.00, otrasCuentasPagar: 788.00, previsiones: 430.00, valoresCirculacion: 0.00, obligSubordinadas: 448.00,
+                patrimonioTotal: 3030.00, capitalSocial: 2060.00, aportesNoCapitalizados: 19.00, ajustesPatrimonio: 0.00, reservas: 475.00, resultadosAcumulados: 476.00, totalPasivoPatrimonio: 31250.00
+            },
+            BCR: {
+                name: "BANCO DE CREDITO DE BOLIVIA SA (BCR)",
+                activoTotal: 27139.00, disponibilidades: 3620.00, inversionesTemporarias: 3410.00, cartera: 17850.00, otrasCuentasCobrar: 203.00, bienesRealizables: 23.00, inversionesPermanentes: 1530.00, bienesUso: 410.00, otrosActivos: 93.00, fideicomisos: 0.00,
+                carteraTotal: 18446.69, carteraVigente: 16266.35, carteraVencida: 111.08, carteraEjecucion: 91.21, carteraReprogVigente: 1694.70, carteraReprogVencida: 143.91, carteraReprogEjecucion: 129.89, prodDevengados: 521.75, previsionIncobrabilidad: -512.19,
+                pasivoTotal: 25176.00, obligPublicoFull: 21229.00, obligPublico: 19282.00, dcc: 5643.00, dca: 5134.00, dpf: 8505.00, obligPlazoOtras: 1.00, obligAnotacionCuenta: 8504.00,
+                otrosPasivos: 5894.00, obligRestringidas: 268.00, cargosDevengados: 1679.00, obligFiscales: 6.00, obligEmpresasPublicas: 1273.00, obligBancos: 1544.00, otrasCuentasPagar: 411.00, previsiones: 361.00, valoresCirculacion: 85.00, obligSubordinadas: 267.00,
+                patrimonioTotal: 1963.00, capitalSocial: 1334.00, aportesNoCapitalizados: 12.00, ajustesPatrimonio: 0.00, reservas: 308.00, resultadosAcumulados: 309.00, totalPasivoPatrimonio: 27139.00
+            },
+            BGA: {
+                name: "BANCO GANADERO SA (BGA)",
+                activoTotal: 21938.00, disponibilidades: 2950.00, inversionesTemporarias: 2780.00, cartera: 14430.00, otrasCuentasCobrar: 164.00, bienesRealizables: 19.00, inversionesPermanentes: 1240.00, bienesUso: 285.00, otrosActivos: 70.00, fideicomisos: 0.00,
+                carteraTotal: 14299.18, carteraVigente: 11452.28, carteraVencida: 20.46, carteraEjecucion: 135.24, carteraReprogVigente: 2525.54, carteraReprogVencida: 32.54, carteraReprogEjecucion: 163.89, prodDevengados: 408.79, previsionIncobrabilidad: -439.55,
+                pasivoTotal: 20281.00, obligPublicoFull: 16882.00, obligPublico: 15394.00, dcc: 2981.00, dca: 5330.00, dpf: 7083.00, obligPlazoOtras: 0.00, obligAnotacionCuenta: 7083.00,
+                otrosPasivos: 4887.00, obligRestringidas: 223.00, cargosDevengados: 1265.00, obligFiscales: 0.00, obligEmpresasPublicas: 433.00, obligBancos: 1720.00, otrasCuentasPagar: 661.00, previsiones: 177.00, valoresCirculacion: 187.00, obligSubordinadas: 221.00,
+                patrimonioTotal: 1657.00, capitalSocial: 1126.00, aportesNoCapitalizados: 10.00, ajustesPatrimonio: 0.00, reservas: 260.00, resultadosAcumulados: 261.00, totalPasivoPatrimonio: 21938.00
+            },
+            BEC: {
+                name: "BANCO ECONOMICO SA (BEC)",
+                activoTotal: 16114.00, disponibilidades: 2160.00, inversionesTemporarias: 2040.00, cartera: 10590.00, otrasCuentasCobrar: 120.00, bienesRealizables: 14.00, inversionesPermanentes: 910.00, bienesUso: 230.00, otrosActivos: 50.00, fideicomisos: 0.00,
+                carteraTotal: 11697.72, carteraVigente: 10260.21, carteraVencida: 41.33, carteraEjecucion: 49.18, carteraReprogVigente: 1163.67, carteraReprogVencida: 54.06, carteraReprogEjecucion: 181.50, prodDevengados: 308.73, previsionIncobrabilidad: -360.95,
+                pasivoTotal: 14852.00, obligPublicoFull: 12675.00, obligPublico: 11069.00, dcc: 1131.00, dca: 3011.00, dpf: 6927.00, obligPlazoOtras: 0.00, obligAnotacionCuenta: 6927.00,
+                otrosPasivos: 3783.00, obligRestringidas: 212.00, cargosDevengados: 1394.00, obligFiscales: 2.00, obligEmpresasPublicas: 42.00, obligBancos: 1266.00, otrasCuentasPagar: 367.00, previsiones: 158.00, valoresCirculacion: 18.00, obligSubordinadas: 324.00,
+                patrimonioTotal: 1262.00, capitalSocial: 858.00, aportesNoCapitalizados: 8.00, ajustesPatrimonio: 0.00, reservas: 198.00, resultadosAcumulados: 198.00, totalPasivoPatrimonio: 16114.00
+            },
+            BSO: {
+                name: "BANCO SOLIDARIO SA (BSO)",
+                activoTotal: 26740.00, disponibilidades: 3580.00, inversionesTemporarias: 3380.00, cartera: 17590.00, otrasCuentasCobrar: 200.00, bienesRealizables: 23.00, inversionesPermanentes: 1510.00, bienesUso: 375.00, otrosActivos: 82.00, fideicomisos: 0.00,
+                carteraTotal: 18164.51, carteraVigente: 16684.92, carteraVencida: 93.44, carteraEjecucion: 69.98, carteraReprogVigente: 1398.86, carteraReprogVencida: 50.15, carteraReprogEjecucion: 59.37, prodDevengados: 414.53, previsionIncobrabilidad: -606.75,
+                pasivoTotal: 24001.00, obligPublicoFull: 17756.00, obligPublico: 16754.00, dcc: 16.00, dca: 8872.00, dpf: 7866.00, obligPlazoOtras: 1.00, obligAnotacionCuenta: 7865.00,
+                otrosPasivos: 7247.00, obligRestringidas: 123.00, cargosDevengados: 879.00, obligFiscales: 11.00, obligEmpresasPublicas: 1842.00, obligBancos: 3074.00, otrasCuentasPagar: 378.00, previsiones: 230.00, valoresCirculacion: 361.00, obligSubordinadas: 349.00,
+                patrimonioTotal: 2739.00, capitalSocial: 1862.00, aportesNoCapitalizados: 17.00, ajustesPatrimonio: 0.00, reservas: 430.00, resultadosAcumulados: 430.00, totalPasivoPatrimonio: 26740.00
+            },
+            BNA: {
+                name: "BANCO DE LA NACION ARGENTINA (BNA)",
+                activoTotal: 218.00, disponibilidades: 29.00, inversionesTemporarias: 28.00, cartera: 143.00, otrasCuentasCobrar: 2.00, bienesRealizables: 0.00, inversionesPermanentes: 12.00, bienesUso: 3.00, otrosActivos: 1.00, fideicomisos: 0.00,
+                carteraTotal: 113.57, carteraVigente: 110.09, carteraVencida: 0.00, carteraEjecucion: 0.00, carteraReprogVigente: 2.09, carteraReprogVencida: 0.00, carteraReprogEjecucion: 0.00, prodDevengados: 1.50, previsionIncobrabilidad: -0.13,
+                pasivoTotal: 121.00, obligPublicoFull: 80.00, obligPublico: 69.00, dcc: 44.00, dca: 18.00, dpf: 7.00, obligPlazoOtras: 7.00, obligAnotacionCuenta: 0.00,
+                otrosPasivos: 52.00, obligRestringidas: 11.00, cargosDevengados: 0.00, obligFiscales: 0.00, obligEmpresasPublicas: 0.00, obligBancos: 34.00, otrasCuentasPagar: 5.00, previsiones: 2.00, valoresCirculacion: 0.00, obligSubordinadas: 0.00,
+                patrimonioTotal: 97.00, capitalSocial: 66.00, aportesNoCapitalizados: 1.00, ajustesPatrimonio: 0.00, reservas: 15.00, resultadosAcumulados: 15.00, totalPasivoPatrimonio: 218.00
+            },
+            BIE: {
+                name: "BANCO FIE SA (BIE)",
+                activoTotal: 26395.00, disponibilidades: 3530.00, inversionesTemporarias: 3340.00, cartera: 17360.00, otrasCuentasCobrar: 197.00, bienesRealizables: 22.00, inversionesPermanentes: 1490.00, bienesUso: 375.00, otrosActivos: 81.00, fideicomisos: 0.00,
+                carteraTotal: 18755.04, carteraVigente: 17124.16, carteraVencida: 96.35, carteraEjecucion: 85.48, carteraReprogVigente: 1578.14, carteraReprogVencida: 138.73, carteraReprogEjecucion: 173.03, prodDevengados: 504.82, previsionIncobrabilidad: -945.67,
+                pasivoTotal: 24481.00, obligPublicoFull: 18438.00, obligPublico: 17424.00, dcc: 1110.00, dca: 5584.00, dpf: 10730.00, obligPlazoOtras: 0.00, obligAnotacionCuenta: 10730.00,
+                otrosPasivos: 7057.00, obligRestringidas: 121.00, cargosDevengados: 893.00, obligFiscales: 5.00, obligEmpresasPublicas: 711.00, obligBancos: 3343.00, otrasCuentasPagar: 412.00, previsiones: 289.00, valoresCirculacion: 950.00, obligSubordinadas: 333.00,
+                patrimonioTotal: 1914.00, capitalSocial: 1301.00, aportesNoCapitalizados: 12.00, ajustesPatrimonio: 0.00, reservas: 300.00, resultadosAcumulados: 301.00, totalPasivoPatrimonio: 26395.00
+            },
+            BFO: {
+                name: "BANCO FORTALEZA SA (BFO)",
+                activoTotal: 5364.00, disponibilidades: 720.00, inversionesTemporarias: 680.00, cartera: 3520.00, otrasCuentasCobrar: 40.00, bienesRealizables: 5.00, inversionesPermanentes: 300.00, bienesUso: 84.00, otrosActivos: 15.00, fideicomisos: 0.00,
+                carteraTotal: 4055.41, carteraVigente: 3199.30, carteraVencida: 10.07, carteraEjecucion: 82.32, carteraReprogVigente: 666.64, carteraReprogVencida: 13.55, carteraReprogEjecucion: 127.47, prodDevengados: 176.14, previsionIncobrabilidad: -220.08,
+                pasivoTotal: 4929.00, obligPublicoFull: 3912.00, obligPublico: 3829.00, dcc: 367.00, dca: 1029.00, dpf: 2433.00, obligPlazoOtras: 6.00, obligAnotacionCuenta: 2427.00,
+                otrosPasivos: 1100.00, obligRestringidas: 83.00, cargosDevengados: 273.00, obligFiscales: 0.00, obligEmpresasPublicas: 0.00, obligBancos: 582.00, otrasCuentasPagar: 61.00, previsiones: 48.00, valoresCirculacion: 0.00, obligSubordinadas: 53.00,
+                patrimonioTotal: 435.00, capitalSocial: 295.00, aportesNoCapitalizados: 3.00, ajustesPatrimonio: 0.00, reservas: 68.00, resultadosAcumulados: 69.00, totalPasivoPatrimonio: 5364.00
+            },
+            BPR: {
+                name: "BANCO PRODEM SA (BPR)",
+                activoTotal: 11538.00, disponibilidades: 1540.00, inversionesTemporarias: 1460.00, cartera: 7580.00, meCuentasCobrar: 86.00, bienesRealizables: 10.00, inversionesPermanentes: 650.00, bienesUso: 172.00, otrosActivos: 40.00, fideicomisos: 0.00,
+                carteraTotal: 10051.48, carteraVigente: 8604.97, carteraVencida: 16.78, carteraEjecucion: 15.80, carteraReprogVigente: 1267.60, carteraReprogVencida: 26.41, carteraReprogEjecucion: 52.49, prodDevengados: 380.30, previsionIncobrabilidad: -312.86,
+                pasivoTotal: 10061.00, obligPublicoFull: 8220.00, obligPublico: 7974.00, dcc: 39.00, dca: 2632.00, dpf: 5303.00, obligPlazoOtras: 0.00, obligAnotacionCuenta: 5303.00,
+                otrosPasivos: 2087.00, obligRestringidas: 246.00, cargosDevengados: 671.00, obligFiscales: 2.00, obligEmpresasPublicas: 213.00, obligBancos: 478.00, otrasCuentasPagar: 193.00, previsiones: 284.00, valoresCirculacion: 0.00, obligSubordinadas: 0.00,
+                patrimonioTotal: 1477.00, capitalSocial: 1004.00, aportesNoCapitalizados: 9.00, ajustesPatrimonio: 0.00, reservas: 232.00, resultadosAcumulados: 232.00, totalPasivoPatrimonio: 11538.00
+            }
+        };
+
+        function renderDashboard() {
+            const data = bankDataMatrix[currentEntityKey] || bankDataMatrix.TOTAL_SISTEMA;
+            const pasivoMasPatrimonio = data.totalPasivoPatrimonio;
+            document.getElementById('currentEntityTitle').innerText = data.name;
+            document.getElementById('fullStatementBankBadge').innerText = data.name;
+
+            // 1. KPIs con montos exactos
+            const kpiContainer = document.getElementById('kpiContainer');
+            const pctPatrimonio = ((data.patrimonioTotal / pasivoMasPatrimonio) * 100).toFixed(2);
+
+            kpiContainer.innerHTML = `
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase">OBLIGACIONES CON EL PÚBLICO</span>
+                        <div class="p-2 bg-[#2A9D8F]/10 text-[#2A9D8F] rounded-lg"><i class="fa-solid fa-vault text-sm"></i></div>
+                    </div>
+                    <div class="text-lg sm:text-xl font-black text-[#0D3B36]">Bs. ${data.obligPublico.toLocaleString('es-BO', {minimumFractionDigits: 2})} M</div>
+                    <span class="text-[10px] sm:text-xs text-[#2A9D8F] font-medium">${((data.obligPublico/pasivoMasPatrimonio)*100).toFixed(2)}% del Balance Total</span>
+                </div>
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase">OTROS PASIVOS (OP)</span>
+                        <div class="p-2 bg-[#F2B880]/20 text-[#0D3B36] rounded-lg"><i class="fa-solid fa-file-invoice-dollar text-sm"></i></div>
+                    </div>
+                    <div class="text-lg sm:text-xl font-black text-[#0D3B36]">Bs. ${data.otrosPasivos.toLocaleString('es-BO', {minimumFractionDigits: 2})} M</div>
+                    <span class="text-[10px] sm:text-xs text-[#1B6B63] font-medium">${((data.otrosPasivos/pasivoMasPatrimonio)*100).toFixed(2)}% del Balance Total</span>
+                </div>
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase">PATRIMONIO (PAT)</span>
+                        <div class="p-2 bg-[#A8E0A2]/30 text-[#0D3B36] rounded-lg"><i class="fa-solid fa-building-columns text-sm"></i></div>
+                    </div>
+                    <div class="text-lg sm:text-xl font-black text-[#0D3B36]">Bs. ${data.patrimonioTotal.toLocaleString('es-BO', {minimumFractionDigits: 2})} M</div>
+                    <span class="text-[10px] sm:text-xs text-[#1B6B63] font-semibold">${pctPatrimonio}% del Balance Total</span>
+                </div>
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase">PASIVO + PATRIMONIO</span>
+                        <div class="p-2 bg-[#F2C94C]/30 text-[#0D3B36] rounded-lg"><i class="fa-solid fa-scale-balanced text-sm"></i></div>
+                    </div>
+                    <div class="text-lg sm:text-xl font-black text-[#0D3B36]">Bs. ${pasivoMasPatrimonio.toLocaleString('es-BO', {minimumFractionDigits: 2})} M</div>
+                    <span class="text-[10px] sm:text-xs text-[#0D3B36] font-bold">100.00% del Balance</span>
+                </div>
+            `;
+
+            // 2. Destruir instancias previas
+            if (chartInstance1) chartInstance1.destroy();
+            if (chartInstance2) chartInstance2.destroy();
+            if (chartInstance3) chartInstance3.destroy();
+
+            // GRÁFICO 1: Barras ampliadas
+            const ctx1 = document.getElementById('chart1').getContext('2d');
+            chartInstance1 = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: ['DCC', 'DCA', 'DPF', 'OP', 'PAT'],
+                    datasets: [{
+                        data: [data.dcc, data.dca, data.dpf, data.otrosPasivos, data.patrimonioTotal],
+                        backgroundColor: [
+                            PALETTE.teal,
+                            PALETTE.lightGreen,
+                            PALETTE.peach,
+                            PALETTE.yellow,
+                            '#ffffff'
+                        ],
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            color: '#ffffff',
+                            font: { weight: 'bold', size: window.innerWidth < 640 ? 9 : 11 },
+                            formatter: (val) => val.toLocaleString('es-BO')
+                        }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#F2C94C', font: { weight: 'bold', size: window.innerWidth < 640 ? 10 : 12 } }, grid: { display: false } },
+                        y: { ticks: { color: '#A8E0A2', font: { size: window.innerWidth < 640 ? 9 : 11 } }, grid: { color: '#1B6B63' } }
+                    }
+                }
+            });
+
+            // GRÁFICO 2: Circular (Pie)
+            const ctx2 = document.getElementById('chart2').getContext('2d');
+            chartInstance2 = new Chart(ctx2, {
+                type: 'pie',
+                data: {
+                    labels: ['OBLIGACIONES PÚBLICO', 'OTROS PASIVOS', 'PATRIMONIO'],
+                    datasets: [{
+                        data: [data.obligPublico, data.otrosPasivos, data.patrimonioTotal],
+                        backgroundColor: [PALETTE.teal, PALETTE.peach, PALETTE.yellow],
+                        borderColor: '#0D3B36',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: '#ffffff', font: { size: window.innerWidth < 640 ? 9 : 10, weight: 'bold' } } },
+                        datalabels: {
+                            color: '#0D3B36',
+                            font: { weight: 'bold', size: window.innerWidth < 640 ? 10 : 12 },
+                            formatter: (value) => {
+                                return Math.round((value / pasivoMasPatrimonio) * 100) + '%';
+                            }
+                        }
+                    }
+                }
+            });
+
+            // GRÁFICO 3: Anillo (Donut)
+            const ctx3 = document.getElementById('chart3').getContext('2d');
+            chartInstance3 = new Chart(ctx3, {
+                type: 'doughnut',
+                data: {
+                    labels: ['OBLIGACIONES PÚBLICO', 'OTROS PASIVOS', 'PATRIMONIO'],
+                    datasets: [{
+                        data: [data.obligPublico, data.otrosPasivos, data.patrimonioTotal],
+                        backgroundColor: [PALETTE.teal, PALETTE.peach, PALETTE.yellow],
+                        borderColor: '#0D3B36',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: '#ffffff', font: { size: window.innerWidth < 640 ? 9 : 10, weight: 'bold' } } },
+                        datalabels: {
+                            color: '#0D3B36',
+                            font: { weight: 'bold', size: window.innerWidth < 640 ? 10 : 12 },
+                            formatter: (value) => {
+                                return Math.round((value / pasivoMasPatrimonio) * 100) + '%';
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 3. Renderizar Tabla de Resumen por Módulo
+            const tableBody = document.getElementById('summaryTableBody');
+            tableBody.innerHTML = '';
+
+            rowsSchema.forEach(item => {
+                const amount = item.key === "pasivoMasPatrimonio" ? pasivoMasPatrimonio : (data[item.key] ?? 0);
+                const pct = ((amount / pasivoMasPatrimonio) * 100).toFixed(2);
+                const isHeader = item.code === "210.00" || item.code === "300.00" || item.code === "TOTAL" || item.name.includes("OTROS PASIVOS");
+                const rowStyle = isHeader ? "bg-[#2A9D8F]/15 font-bold text-[#0D3B36]" : "hover:bg-slate-50";
+
+                tableBody.innerHTML += `
+                    <tr class="${rowStyle} transition">
+                        <td class="px-3 sm:px-6 py-2.5 sm:py-3 font-mono text-[11px] sm:text-xs">${item.code}</td>
+                        <td class="px-3 sm:px-6 py-2.5 sm:py-3">${item.name}</td>
+                        <td class="px-3 sm:px-6 py-2.5 sm:py-3 text-right font-semibold">Bs. ${amount.toLocaleString('es-BO', {minimumFractionDigits: 2})}</td>
+                        <td class="px-3 sm:px-6 py-2.5 sm:py-3 text-right">${pct}%</td>
+                        <td class="px-3 sm:px-6 py-2.5 sm:py-3 text-center text-[10px] sm:text-xs text-slate-500 font-mono">${item.formula}</td>
+                    </tr>
+                `;
+            });
+
+            // 4. Renderizar Tabla de Estado de Situación Financiera Completo
+            const fullStmtBody = document.getElementById('fullStatementTableBody');
+            if (fullStmtBody) {
+                fullStmtBody.innerHTML = '';
+
+                fullStatementSchema.forEach(row => {
+                    const amount = data[row.key] ?? 0;
+                    const baseVal = data[row.pctBaseKey] ?? pasivoMasPatrimonio;
+                    const pctVal = baseVal > 0 ? Math.round((amount / baseVal) * 100) : 0;
+                    
+                    if (row.isHeader) {
+                        const headerBg = row.name === "PASIVO + PATRIMONIO" 
+                            ? "bg-[#0D3B36] text-[#F2C94C] font-extrabold text-xs sm:text-sm uppercase" 
+                            : "bg-[#71B340] text-slate-900 font-extrabold text-xs sm:text-sm uppercase border-t-2 border-b-2 border-slate-300";
+
+                        fullStmtBody.innerHTML += `
+                            <tr class="${headerBg}">
+                                <td class="px-3 sm:px-6 py-2 sm:py-2.5 font-mono">${row.code}</td>
+                                <td class="px-3 sm:px-6 py-2 sm:py-2.5 font-bold tracking-wide">${row.name}</td>
+                                <td class="px-3 sm:px-6 py-2 sm:py-2.5 text-right font-black">Bs. ${amount.toLocaleString('es-BO', {minimumFractionDigits: 2})}</td>
+                                <td class="px-3 sm:px-6 py-2 sm:py-2.5 text-right font-black">${pctVal}%</td>
+                            </tr>
+                        `;
+                    } else {
+                        fullStmtBody.innerHTML += `
+                            <tr class="hover:bg-emerald-50/50 transition">
+                                <td class="px-3 sm:px-6 py-2 sm:py-2.5 font-mono text-[11px] sm:text-xs text-slate-500">${row.code}</td>
+                                <td class="px-3 sm:px-6 py-2 sm:py-2.5 font-medium">${row.name}</td>
+                                <td class="px-3 sm:px-6 py-2 sm:py-2.5 text-right font-mono font-semibold">Bs. ${amount.toLocaleString('es-BO', {minimumFractionDigits: 2})}</td>
+                                <td class="px-3 sm:px-6 py-2 sm:py-2.5 text-right font-mono font-bold text-slate-600">${pctVal}%</td>
+                            </tr>
+                        `;
+                    }
+                });
+            }
+        }
+
+        // FUNCIÓN PARA RENDERIZAR MÓDULO DE CARTERAS
+        function renderPortfolioView() {
+            const data = bankDataMatrix[currentEntityKey] || bankDataMatrix.TOTAL_SISTEMA;
+            const cTotal = data.carteraTotal || 1;
+
+            document.getElementById('portfolioEntityTitle').innerText = `${data.name} - ANÁLISIS DE CARTERA`;
+            
+            // Actualizar Tarjeta Lateral Informativa
+            document.getElementById('portfolioTotalCardValue').innerText = `Bs. ${data.carteraTotal.toLocaleString('es-BO', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+            const moraTotal = (data.carteraVencida || 0) + (data.carteraEjecucion || 0) + (data.carteraReprogVencida || 0) + (data.carteraReprogEjecucion || 0);
+            const reprogTotal = (data.carteraReprogVigente || 0) + (data.carteraReprogVencida || 0) + (data.carteraReprogEjecucion || 0);
+            
+            const pctVigente = (((data.carteraVigente || 0) / cTotal) * 100).toFixed(1);
+            const pctReprog = ((reprogTotal / cTotal) * 100).toFixed(1);
+            const pctMora = ((moraTotal / cTotal) * 100).toFixed(2);
+            const prevAbs = Math.abs(data.previsionIncobrabilidad || 0);
+            const pctPrevision = ((prevAbs / cTotal) * 100).toFixed(2);
+
+            document.getElementById('cardVigentePct').innerText = `${pctVigente}%`;
+            document.getElementById('cardReprogPct').innerText = `${pctReprog}%`;
+            document.getElementById('cardMoraPct').innerText = `${pctMora}%`;
+
+            // KPIs
+            const portfolioKpis = document.getElementById('portfolioKpis');
+            portfolioKpis.innerHTML = `
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase">CARTERA VIGENTE</span>
+                        <div class="p-2 bg-emerald-50 text-[#2A9D8F] rounded-lg"><i class="fa-solid fa-file-contract text-sm"></i></div>
+                    </div>
+                    <div class="text-lg sm:text-xl font-black text-[#0D3B36]">Bs. ${(data.carteraVigente || 0).toLocaleString('es-BO', {minimumFractionDigits: 2})} M</div>
+                    <span class="text-[10px] sm:text-xs text-[#2A9D8F] font-bold">${pctVigente}% de la Cartera Total</span>
+                </div>
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase">CARTERA REPROGRAMADA TOTAL</span>
+                        <div class="p-2 bg-amber-50 text-amber-600 rounded-lg"><i class="fa-solid fa-arrows-rotate text-sm"></i></div>
+                    </div>
+                    <div class="text-lg sm:text-xl font-black text-[#0D3B36]">Bs. ${reprogTotal.toLocaleString('es-BO', {minimumFractionDigits: 2})} M</div>
+                    <span class="text-[10px] sm:text-xs text-amber-600 font-bold">${pctReprog}% Reprogramados</span>
+                </div>
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase">CARTERA EN MORA (VENC + EJEC)</span>
+                        <div class="p-2 bg-rose-50 text-rose-600 rounded-lg"><i class="fa-solid fa-triangle-exclamation text-sm"></i></div>
+                    </div>
+                    <div class="text-lg sm:text-xl font-black text-rose-600">Bs. ${moraTotal.toLocaleString('es-BO', {minimumFractionDigits: 2})} M</div>
+                    <span class="text-[10px] sm:text-xs text-rose-500 font-bold">Índice de Mora: ${pctMora}%</span>
+                </div>
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase">PREVISIÓN PARA INCOBRABILIDAD</span>
+                        <div class="p-2 bg-teal-50 text-[#0D3B36] rounded-lg"><i class="fa-solid fa-shield-halved text-sm"></i></div>
+                    </div>
+                    <div class="text-lg sm:text-xl font-black text-[#0D3B36]">Bs. ${(data.previsionIncobrabilidad || 0).toLocaleString('es-BO', {minimumFractionDigits: 2})} M</div>
+                    <span class="text-[10px] sm:text-xs text-teal-700 font-bold">Cobertura / Previsión: ${pctPrevision}%</span>
+                </div>
+            `;
+
+            // Destruir gráficos previos
+            if (portfolioDoughnutInstance) portfolioDoughnutInstance.destroy();
+            if (portfolioBarInstance) portfolioBarInstance.destroy();
+
+            // Filtrar elementos para la Dona
+            const itemsForDoughnut = portfolioSchema.filter(item => !item.isHeader && !item.isNegative);
+            const doughnutLabels = itemsForDoughnut.map(i => i.name.replace('CARTERA ', ''));
+            const doughnutData = itemsForDoughnut.map(i => data[i.key] || 0);
+
+            const corporatePalette = [
+                '#2A9D8F',
+                '#EB5757',
+                '#F2994A',
+                '#F2C94C',
+                '#A8E0A2',
+                '#1B6B63',
+                '#F2B880'
+            ];
+
+            const ctxDoughnut = document.getElementById('portfolioDoughnutChart').getContext('2d');
+            portfolioDoughnutInstance = new Chart(ctxDoughnut, {
+                type: 'doughnut',
+                data: {
+                    labels: doughnutLabels,
+                    datasets: [{
+                        data: doughnutData,
+                        backgroundColor: corporatePalette,
+                        borderColor: '#0D3B36',
+                        borderWidth: 2,
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '65%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#ffffff',
+                                font: { size: window.innerWidth < 640 ? 8 : 9, weight: '600' },
+                                boxWidth: 8,
+                                padding: 6,
+                                usePointStyle: true
+                            }
+                        },
+                        datalabels: {
+                            color: '#ffffff',
+                            font: { weight: 'bold', size: window.innerWidth < 640 ? 8 : 10 },
+                            formatter: (value) => {
+                                const pct = (value / cTotal) * 100;
+                                return pct >= 5.0 ? pct.toFixed(1) + '%' : '';
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const val = context.raw || 0;
+                                    const pct = ((val / cTotal) * 100).toFixed(2);
+                                    return ` ${context.label}: Bs. ${val.toLocaleString('es-BO')} M (${pct}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Nuevo Gráfico: Barras Horizontales
+            const ctxBar = document.getElementById('portfolioBarChart').getContext('2d');
+            portfolioBarInstance = new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: ['Vigente', 'Reprog. Vig.', 'Prod. Deveng.', 'Reprog. Ejéc.', 'Ejecución', 'Reprog. Venc.', 'Vencida'],
+                    datasets: [{
+                        data: [
+                            data.carteraVigente || 0,
+                            data.carteraReprogVigente || 0,
+                            data.prodDevengados || 0,
+                            data.carteraReprogEjecucion || 0,
+                            data.carteraEjecucion || 0,
+                            data.carteraReprogVencida || 0,
+                            data.carteraVencida || 0
+                        ],
+                        backgroundColor: [
+                            '#2A9D8F',
+                            '#F2C94C',
+                            '#F2B880',
+                            '#1B6B63',
+                            '#F2994A',
+                            '#A8E0A2',
+                            '#EB5757'
+                        ],
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'right',
+                            color: '#F2C94C',
+                            font: { weight: 'bold', size: window.innerWidth < 640 ? 8 : 10 },
+                            formatter: (val) => {
+                                if (val === 0) return '0';
+                                return `Bs. ${val.toLocaleString('es-BO', {maximumFractionDigits: 1})}M`;
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(ctx) {
+                                    return ` Monto: Bs. ${ctx.raw.toLocaleString('es-BO')} Millones`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { 
+                            ticks: { 
+                                color: '#A8E0A2', 
+                                font: { size: 9 },
+                                callback: function(value) {
+                                    return value >= 1000 ? (value / 1000) + 'k' : value;
+                                }
+                            }, 
+                            grid: { color: '#1B6B63' } 
+                        },
+                        y: { 
+                            ticks: { 
+                                color: '#ffffff',
+                                font: { size: window.innerWidth < 640 ? 8 : 10, weight: '600' }
+                            }, 
+                            grid: { display: false } 
+                        }
+                    }
+                }
+            });
+
+            // Render Tabla de Cartera
+            const portTableBody = document.getElementById('portfolioTableBody');
+            portTableBody.innerHTML = '';
+
+            portfolioSchema.forEach(item => {
+                const amount = data[item.key] || 0;
+                const pct = ((amount / cTotal) * 100).toFixed(2);
+
+                if (item.isHeader) {
+                    portTableBody.innerHTML += `
+                        <tr class="bg-[#0D3B36] text-[#F2C94C] font-extrabold text-xs sm:text-sm uppercase">
+                            <td class="px-3 sm:px-6 py-2.5 sm:py-3 font-mono">${item.code}</td>
+                            <td class="px-3 sm:px-6 py-2.5 sm:py-3 tracking-wide">${item.name}</td>
+                            <td class="px-3 sm:px-6 py-2.5 sm:py-3 text-right font-black">Bs. ${amount.toLocaleString('es-BO', {minimumFractionDigits: 2})}</td>
+                            <td class="px-3 sm:px-6 py-2.5 sm:py-3 text-right font-black">100.00%</td>
+                        </tr>
+                    `;
+                } else {
+                    const rowColor = item.isNegative ? "text-rose-600 font-semibold" : "text-slate-700";
+                    portTableBody.innerHTML += `
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="px-3 sm:px-6 py-2 sm:py-2.5 font-mono text-[11px] sm:text-xs text-slate-500">${item.code}</td>
+                            <td class="px-3 sm:px-6 py-2 sm:py-2.5 font-medium ${rowColor}">${item.name}</td>
+                            <td class="px-3 sm:px-6 py-2 sm:py-2.5 text-right font-mono font-semibold ${rowColor}">Bs. ${amount.toLocaleString('es-BO', {minimumFractionDigits: 2})}</td>
+                            <td class="px-3 sm:px-6 py-2 sm:py-2.5 text-right font-mono font-bold text-slate-600">${pct}%</td>
+                        </tr>
+                    `;
+                }
+            });
+        }
+
+        function renderFullDatabaseTable() {
+            const bodyElem = document.getElementById('fullDbBody');
+            if (!bodyElem) return;
+            bodyElem.innerHTML = '';
+
+            const allBankKeys = ['TOTAL_SISTEMA', 'BNB', 'BUN', 'BME', 'BIS', 'BCR', 'BGA', 'BEC', 'BSO', 'BNA', 'BIE', 'BFO', 'BPR'];
+
+            rowsSchema.forEach(item => {
+                const isHeader = item.code === "210.00" || item.code === "300.00" || item.code === "TOTAL" || item.name.includes("OTROS PASIVOS");
+                const rowStyle = isHeader ? "bg-[#F2C94C]/20 font-bold text-[#0D3B36]" : "hover:bg-slate-50";
+
+                let columnsHTML = '';
+                allBankKeys.forEach(bankKey => {
+                    const bData = bankDataMatrix[bankKey];
+                    const val = bData ? (item.key === "pasivoMasPatrimonio" ? bData.totalPasivoPatrimonio : (bData[item.key] ?? 0)) : 0;
+                    const isSelected = currentEntityKey === bankKey;
+                    const highlightClass = isSelected ? 'bg-[#F2C94C]/40 font-extrabold text-[#0D3B36] ring-1 ring-[#F2C94C]' : 'text-slate-700';
+                    const isTotalCol = bankKey === 'TOTAL_SISTEMA' ? 'bg-[#2A9D8F]/15 font-bold text-[#0D3B36] border-l border-[#2A9D8F]/30' : '';
+
+                    columnsHTML += `<td class="px-4 py-2.5 sm:py-3 text-right ${isTotalCol} ${highlightClass}">Bs. ${val.toLocaleString('es-BO')}</td>`;
+                });
+
+                bodyElem.innerHTML += `
+                    <tr class="${rowStyle} transition border-b border-slate-100">
+                        <td class="px-3 py-2.5 sm:py-3 font-mono text-[11px] sm:text-xs text-slate-500 sticky left-0 bg-white z-10 border-r border-slate-100">${item.code}</td>
+                        <td class="px-4 py-2.5 sm:py-3 font-medium sticky left-16 sm:left-20 bg-white z-10 border-r border-slate-100 min-w-[200px] sm:min-w-[220px]">${item.name}</td>
+                        ${columnsHTML}
+                    </tr>
+                `;
+            });
+        }
+
+        function filterDatabaseTable() {
+            const input = document.getElementById('dbSearch').value.toLowerCase();
+            const table = document.getElementById('fullDatabaseTable');
+            const rows = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < rows.length; i++) {
+                let showRow = false;
+                const cells = rows[i].getElementsByTagName('td');
+                for (let j = 0; j < cells.length; j++) {
+                    if (cells[j] && cells[j].innerText.toLowerCase().includes(input)) {
+                        showRow = true;
+                        break;
+                    }
+                }
+                rows[i].style.display = showRow ? '' : 'none';
+            }
+        }
+
+        function exportToCSV() {
+            showToast("Exportando archivo CSV con la base de datos de Pasivos y Patrimonio...");
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Evento de Inicio
+        window.onload = function() {
+            renderDashboard();
+            renderPortfolioView();
+            renderFullDatabaseTable();
+        };
+
+        // Redimensionamiento de gráficos suave al girar pantallas móviles
+        window.onresize = function() {
+            if (chartInstance1) chartInstance1.resize();
+            if (chartInstance2) chartInstance2.resize();
+            if (chartInstance3) chartInstance3.resize();
+            if (portfolioDoughnutInstance) portfolioDoughnutInstance.resize();
+            if (portfolioBarInstance) portfolioBarInstance.resize();
+        };
+
+        // Función para cambiar de entidad bancaria
+        function changeEntity(bankKey) {
+            currentEntityKey = bankKey;
+            
+            // Actualizar vista del dashboard, carteras y base de datos
+            renderDashboard();
+            renderPortfolioView();
+            renderFullDatabaseTable();
+
+            // Mostrar una confirmación al usuario
+            const bankName = bankDataMatrix[bankKey] ? bankDataMatrix[bankKey].name : bankKey;
+            showToast(`Entidad seleccionada: ${bankName}`);
+        }
+
+        // Función para cambiar entre pestañas
+        function switchTab(tab) {
+            const dashView = document.getElementById('dashboardView');
+            const portView = document.getElementById('portfolioView');
+            const dbView = document.getElementById('databaseView');
+            const tabDashBtn = document.getElementById('tab-dashboard');
+            const tabPortBtn = document.getElementById('tab-portfolio');
+            const tabDbBtn = document.getElementById('tab-database');
+
+            dashView.classList.add('hidden');
+            portView.classList.add('hidden');
+            dbView.classList.add('hidden');
+
+            tabDashBtn.className = "text-slate-500 hover:text-slate-700 py-3 px-1 text-xs sm:text-sm font-medium transition-colors flex items-center gap-2";
+            tabPortBtn.className = "text-slate-500 hover:text-slate-700 py-3 px-1 text-xs sm:text-sm font-medium transition-colors flex items-center gap-2";
+            tabDbBtn.className = "text-slate-500 hover:text-slate-700 py-3 px-1 text-xs sm:text-sm font-medium transition-colors flex items-center gap-2";
+
+            if (tab === 'dashboard') {
+                dashView.classList.remove('hidden');
+                tabDashBtn.className = "tab-active py-3 px-1 text-xs sm:text-sm font-medium transition-colors flex items-center gap-2";
+            } else if (tab === 'portfolio') {
+                portView.classList.remove('hidden');
+                tabPortBtn.className = "tab-active py-3 px-1 text-xs sm:text-sm font-medium transition-colors flex items-center gap-2";
+            } else {
+                dbView.classList.remove('hidden');
+                tabDbBtn.className = "tab-active py-3 px-1 text-xs sm:text-sm font-medium transition-colors flex items-center gap-2";
+            }
+        }
+    </script>
+</body>
+</html>
